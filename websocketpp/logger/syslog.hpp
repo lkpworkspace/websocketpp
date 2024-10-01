@@ -31,7 +31,9 @@
 #ifndef WEBSOCKETPP_LOGGER_SYSLOG_HPP
 #define WEBSOCKETPP_LOGGER_SYSLOG_HPP
 
+#ifndef WIN32
 #include <syslog.h>
+#endif
 
 #include <websocketpp/logger/basic.hpp>
 
@@ -81,8 +83,15 @@ public:
     void write(level channel, char const * msg) {
         scoped_lock_type lock(base::m_lock);
         if (!this->dynamic_test(channel)) { return; }
+        #ifndef WIN32
         ::syslog(syslog_priority(channel), "[%s] %s",
             names::channel_name(channel), msg);
+        #else
+        printf("%d [%s] %s",
+            syslog_priority(channel),
+            names::channel_name(channel),
+            msg);
+        #endif
     }
 private:
     typedef typename base::scoped_lock_type scoped_lock_type;

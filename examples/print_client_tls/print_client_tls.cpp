@@ -68,7 +68,11 @@ bool verify_subject_alternative_name(const char * hostname, X509 * cert) {
             break;
         }
         // Compare expected hostname with the CN
+        #ifdef WIN32
+        result = (stricmp(hostname, dns_name) == 0);
+        #else
         result = (strcasecmp(hostname, dns_name) == 0);
+        #endif
     }
     sk_GENERAL_NAME_pop_free(san_names, GENERAL_NAME_free);
     
@@ -103,7 +107,11 @@ bool verify_common_name(char const * hostname, X509 * cert) {
     }
     
     // Compare expected hostname with the CN
+    #ifdef WIN32
+    return (stricmp(hostname, common_name_str) == 0);
+    #else
     return (strcasecmp(hostname, common_name_str) == 0);
+    #endif
 }
 
 /**
